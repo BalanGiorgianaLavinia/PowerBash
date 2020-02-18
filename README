@@ -1,0 +1,178 @@
+								---TEMA 3 POO---
+
+					---BALAN GIORGIANA-LAVINIA	321 CB---
+
+		Pentru implementarea acestei teme am creat 15 clase: 
+
+
+	1. Main: clasa principala care contine metoda main. 
+	Aici deschid fisierele de input, output si errors, initializez sistemul de 
+fisiere si controllerul care executa comenzile, parsez inputul prin citirea
+fiecarei linii pe care o impart cu split retinand totul in vectorul parseVec. 
+Primul element al vectorului este comanda pe care o tratez intr-un switch. 
+	Urmatoarele elemente ale vectorului sunt stocate intr-o lista statica din 
+Main. 
+	Dupa parsarea liniei din input setez comanda curenta, scriu in fisiere 
+numarul curent al comenzii si execut comanda.
+	Dupa ce s-au terminat de executat toate comenzile din input inchid fisierele
+input, output si errors.
+	In aceasta clasa am enumerat comenzile in enum-ul Commands.
+	Pentru simplificarea lucrurilor am creat 5 metode pentru argumentele setate
+in lista statica:
+
+		-resetArguments() - sterge toate argumentele setate anterior.
+
+		-setNewArguments() - primeste ca input vectorul de string-uri impartit in
+		bucla while din metoda main si pornind de la elementele de pe pozitia 1
+		(daca exista) le adauga in lista.
+
+		-getFirstArgument() - returneaza primul argument din lista sub forma de
+		string.
+
+		-getSecondArguments() - returneaza al doilea argument din lista sub 
+		forma de string.
+
+		-getNumberOfArguments() - returneaza numarul de argumente setate in lista.
+
+
+	2. OutputFiles: clasa Singleton care stocheaza referintele catre fisierele de
+input, output si errors pentru a le putea accesa de oriunde din program.
+
+	3. FileSystem: Acest fisier contine 3 clase (am ales acest lucru pentru ca 
+este mai bine sa am sistemul de fisiere intr-un singur loc)
+	
+	-Clasa FileSystem implementeaza formele de Singleton si Composite. Aici se
+gasesc directoarele root si currentDir.
+	Aici exista 4 metode:
+
+		-computePath() - calculeaza calea unei frunze (fisier sau director)
+		pe baza caii parintelui.
+
+		-getDirectoryFrom() - returneaza directorul de la calea data ca parametru
+		(sub forma de string) sau null daca nu exista.
+
+		-extractParentPathFrom() - desparte numele frunzei de calea catre ea
+		returnandu-se calea sub forma de string.
+
+		-getFileName() - returneaza sub forma de string numele frunzei din 
+		calea data ca parametru.
+
+	-Clasa File implementeaza Leaf(interfata care defineste metodele unui
+	nod - fisier sau director). Campurile acestei clase sunt numele fisierului,
+	parintele, calea catre fisier, calea totala (cu tot cu nume) si tipul 
+	fisierului ("File", ma ajuta la diferentierea de director).
+	Constructorul initializeaza campurile de mai sus si calculeaza calea
+	pe baza parintelui.
+	In aceasta clasa sunt prezente metode de get si set pentru variabilele
+	de care am avut nevoie, o metoda care recalculeaza caile in functie de
+	noul parinte si o metoda pentru clonare.
+
+	-Clasa Directory implementeaza Leaf si contine aceleasi campuri ca la
+	File + o structura de tip TreeMap care stocheaza ce am in interiorul
+	acestui director (TreeMap-ul ma ajuta sa afisez alfabetic fisierele 
+	si directoarele din interior).
+	Exista doi constructori: unul cu parametrii pentru directoarele de uz
+	general si unul fara parametrii special pentru instantierea directorului
+	root.
+	La fel ca la clasa File sunt implementate aceleasi metode.
+	Metoda de clonare este putin mai complicata pentru ca aici se cloneaza
+	treemap-ul impreuna cu toate obiectele din interior. Daca obiectele din
+	interior sunt si ele directoare se vor clona si acestea.
+	In plus mai sunt metodele:
+
+		-get() - returneaza obiectul din interiorul treemap-ului cautat
+		dupa nume sau null daca nu exista.
+
+		-add() - adauga in treemap o frunza (fisier sau director).
+
+		-listFiles() - returneaza un string de forma specificata in enuntul
+		temei (numele directorului impreuna cu continutul acestuia).
+
+		-listFilesRecursive() - la fel ca metoda de mai sus doar ca formatul
+		este special pentru comanda ls -R.
+
+		-resetPathAndParents() - reseteaza caile si parintii fisierului sau
+		directorului, doar ca la director se reseteaza si caile si parintii
+		din continutul acestuia (si asa mai departe pana la ultimul director
+		sau fisier din ierarhie).
+
+		-remove() - sterge o frunza din continutul directorului.
+
+		-hasCurrentDir() - verifica daca directorul este folder curent.
+		Daca nu, verifica daca unul din directoarele din interiorul acestuia
+		este directorul curent.
+
+		-getDirectory() - cauta in director si in directoarele din continutul
+		acestuia un director dupa numele dat ca parametru.
+
+	4. Interfata Command: face parte din design pattern-ul Command si contine
+	o singura metoda: metoda run().
+
+	5. CommandController: este un Singleton si face parte, de asemenea, din
+	design pattern-ul Command. Aceasta contine o variabila de tip Command
+	care este setata in bucla while din main dupa parsare.
+	Metoda run() apeleaza metoda run() a comenzii curente. Daca metoda nu a fost
+	setata se afiseaza un mesaj de eroare.
+
+	6. CommandFactory: contine o metoda statica din care se returneaza o
+	instanta de comanda pe baza enum-ului din main.
+
+	7. Cd: contine implementarea comenzii "cd".
+	Metoda run() a acestei comenzi ia din lista de argumente din Main primul
+	argument reprezentand calea, cauta directorul de la cale si afiseaza
+	calea completa a acestuia. Daca directorul nu se gaseste se afiseaza
+	eroarea in fisier.
+
+	8. Cp: contine implementarea comenzii "cp".
+	Metoda run() a acestei comenzi ia din lista de argumente cele doua cai,
+	cauta directoarele specifice (daca nu le gaseste afiseaza eroare in fisier),
+	cauta fisierul sau directorul la sursa (daca nu exista se afiseaza eroare),
+	cauta fisierul sau directorul cu acelasi nume in folderul destinatie (daca
+	exista afiseaza eroarea ca exista), si daca nu exista, cloneaza frunza, o
+	adauga in folderul destinatie, ii seteaza noul parinte si reseteaza caile
+	si parintii (daca frunza de copiat este director).
+
+	9. Ls: contine implementarea comenzii "ls".
+	Metoda run() a acestei comenzi verifica numarul de argumente si pe baza
+	acestuia se verifica argumentele.
+	Daca nu exista niciun argument se va afisa calea directorului curent.
+	Daca este doar un argument se verifica daca este -R sau calea.
+		Daca este -R se afiseaza arborele directorului curent.
+		Daca este cale atunci se cauta directorul (daca nu se gaseste se
+		afiseaza eroare) si se afiseaza doar continutul acestuia.
+	Daca sunt doua argumente se cauta calea, se cauta directorul din cale
+	(daca nu exista se afiseaza eroare) si se afiseaza arborele acestui
+	director.
+
+	10. Mkdir: contine implementarea comenzii "mkdir".
+	Metoda run() a acestei comenzi ia din lista de argumente din Main primul
+	argument reprezentand calea directorului de creat. Se despart calea catre
+	directorul de creat si numele acestuia, caut folderul din cale (daca nu
+	exista afisez eroarea), caut daca in director exista deja directorul pe
+	care vreau sa il creez, daca exista afisez eroarea ca exista, iar daca nu
+	exista creez un nou director cu parintele folderul gasit si numele
+	directorului din argument. Acesta va fi adaugat in interiorul directorului
+	care trebuie sa il contina pe cel nou creat.
+
+	11. Mv: contine implementarea comenzii "mv".
+	Metoda run() a acestei comenzi este asemanatoare cu cea a comenzii cp, doar
+	ca nu se va mai clona frunza, ci se va verifica daca exista la destinatie
+	(daca exista se afiseaza eroarea), se adauga frunza in noul director
+	destinatie si se sterge din sursa.
+
+	12. Pwd: contine implementarea comenzii "pwd".
+	Metoda run() a acestei comenzi ia din sistemul de fisiere directorul curent,
+	retine calea absoluta si o afiseaza in fisierul de output.
+
+	13. Rm: contine implementarea comenzii "rm".
+	Metoda run() a acestei comenzi ia primul argument reprezentand calea, 
+	desparte numele frunzei de restul caii, cauta directorul de la cale
+	(daca nu exista afisez eroare), cauta frunza de sters (daca nu exista
+	afisez eroare) si sterge din continutul directorului frunza gasita.
+
+	14. Touch: contine implementarea comenzii "touch".
+	Metoda run() a acestei comenzi este identica in implementare cu cea a 
+	comenzii mkdir, doar ca se va crea un fisier in loc de diretor.
+
+	15. Interfata Leaf: contine metodele de care este nevoie atat pentru
+	fisiere, cat si pentru directoare.
